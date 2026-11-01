@@ -1,8 +1,24 @@
-# AD Management Tool - Section 1 of 8 (Core Functions) - REPLACEMENT
-# Save as: ADTool-Section1.ps1
+<#
+.SYNOPSIS
+    AD Toolkit: an interactive menu for everyday Active Directory admin.
+
+.DESCRIPTION
+    User and computer lookups, unlocks, enable/disable, password resets, reports
+    (locked out, password expiry, inactive, privileged, stale computers, AD health),
+    bulk operations from CSV, and CSV/HTML export. It finds the domain and domain
+    controllers itself, so there is nothing to configure for your network.
+
+.PARAMETER SkipInitCheck
+    Skip the domain connectivity check on the welcome screen.
+
+.EXAMPLE
+    .\ADToolkit.ps1
+#>
 
 #Requires -Version 5.0
 #Requires -Modules ActiveDirectory
+
+param([switch]$SkipInitCheck)
 
 # Global configuration
 $Script:Config = @{
@@ -40,7 +56,7 @@ function Write-ADLog {
 }
 
 function Initialize-ADTool {
-    Write-ADLog "Initializing AD Management Tool..." -Level Info
+    Write-ADLog "Initializing AD Toolkit..." -Level Info
 
     if (!(Get-Module -ListAvailable -Name ActiveDirectory)) {
         Write-ADLog "ActiveDirectory module not found" -Level Error
@@ -170,8 +186,7 @@ function Get-UserDetails {
     }
 }
 
-Write-ADLog "Section 1 loaded successfully" -Level Success
-# SECTION 2/8 — User Management
+# ==== User management ====
 
 function Set-UserEnabled {
     [CmdletBinding(SupportsShouldProcess)]
@@ -347,9 +362,7 @@ function Invoke-BulkUserOperation {
     return $results
 }
 
-Write-ADLog "Section 2 loaded successfully" -Level Success
-# AD Management Tool - Section 3 of 8 (Computer Management) - UPDATED
-# Save as: ADTool-Section3.ps1
+# ==== Computer management ====
 
 # Prefer private LAN IPv4s over CGNAT/Tailscale/public when resolving hostnames
 function Resolve-PreferPrivateIPv4 {
@@ -569,9 +582,8 @@ function Get-StaleComputersReport {
     }
 }
 
-Write-ADLog "Section 3 loaded successfully" -Level Success
 
-# SECTION 4/8 — Reporting
+# ==== Reporting ====
 
 function Get-LockedOutUsers {
     try {
@@ -771,8 +783,7 @@ function Get-ADHealthReport {
     }
 }
 
-Write-ADLog "Section 4 loaded successfully" -Level Success
-# SECTION 5/8 — Export & CSV (fixed)
+# ==== Export & CSV ====
 
 function Export-ReportToCSV {
     param(
@@ -997,16 +1008,14 @@ function Invoke-BulkOperationFromCSV {
     }
 }
 
-Write-ADLog "Section 5 loaded successfully" -Level Success
-# AD Management Tool - Section 6 of 8 (Menu / UI) - UPDATED
-# Save as: ADTool-Section6.ps1
+# ==== Menu / UI ====
 
 function Show-MainMenu {
     Clear-Host
     $uptime = (Get-Date) - $Script:Stats.StartTime
 
     Write-Host "================================================================" -ForegroundColor Cyan
-    Write-Host "              AD Management Tool v3.0 - Main Menu              " -ForegroundColor Cyan
+    Write-Host "              AD Toolkit v3.0 - Main Menu              " -ForegroundColor Cyan
     Write-Host "================================================================" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "USER MANAGEMENT" -ForegroundColor Yellow
@@ -1202,7 +1211,7 @@ function Invoke-MainMenuLoop {
                 '17' { Show-Statistics; Read-Host "`nPress Enter to continue" }
                 '18' { Show-Settings;   Read-Host "`nPress Enter to continue" }
                 'H'  { Show-Help;       Read-Host "`nPress Enter to continue" }
-                'Q'  { Write-Host "`nExiting AD Management Tool..." -ForegroundColor Yellow; break }
+                'Q'  { Write-Host "`nExiting AD Toolkit..." -ForegroundColor Yellow; break }
 
                 default {
                     Write-Host "Invalid selection. Please try again." -ForegroundColor Red
@@ -1217,9 +1226,8 @@ function Invoke-MainMenuLoop {
     } while ($choice.ToUpper() -ne 'Q')
 }
 
-Write-ADLog "Section 6 loaded successfully" -Level Success
 
-# SECTION 7/8 — Settings / Help
+# ==== Settings / Help ====
 
 function Show-Statistics {
     Clear-Host
@@ -1285,7 +1293,7 @@ function Show-Settings {
 
 function Show-Help {
     Clear-Host
-    Write-Host "=== AD MANAGEMENT TOOL HELP ===" -ForegroundColor Cyan
+    Write-Host "=== AD TOOLKIT HELP ===" -ForegroundColor Cyan
     Write-Host ""
     Write-Host "OVERVIEW:" -ForegroundColor Yellow
     Write-Host "This tool provides comprehensive Active Directory management capabilities"
@@ -1321,8 +1329,7 @@ function Show-Help {
     Write-Host "- Review log file for detailed error information"
 }
 
-Write-ADLog "Section 7 loaded successfully" -Level Success
-# SECTION 8/8 — Main Launcher (single-file mode)
+# ==== Main Launcher ====
 
 function Test-ModuleFiles {
     param([string]$Path)
@@ -1333,7 +1340,7 @@ function Test-ModuleFiles {
 function Initialize-ADToolModules {
     param([string]$Path)
     # Single-file mode: all functions are already in this script
-    Write-Host "Initializing AD Management Tool v3.0 (single-file mode)..." -ForegroundColor Cyan
+    Write-Host "Initializing AD Toolkit v3.0 (single-file mode)..." -ForegroundColor Cyan
     Write-Host "All modules are embedded; skipping external loads." -ForegroundColor Green
     return $true
 }
@@ -1342,7 +1349,7 @@ function Show-WelcomeScreen {
     Clear-Host
     Write-Host @"
 ================================================================
-               AD Management Tool v3.0
+               AD Toolkit v3.0
 ================================================================
 
 Welcome to the comprehensive Active Directory management solution!
@@ -1400,7 +1407,7 @@ function Show-StartupError {
     Clear-Host
     Write-Host @"
 ================================================================
-               AD Management Tool v3.0 - STARTUP ERROR
+               AD Toolkit v3.0 - STARTUP ERROR
 ================================================================
 
 $ErrorMessage
@@ -1454,5 +1461,5 @@ try {
             Write-Host "  Log File: $($Script:Config.LogPath)"
         }
     }
-    Write-Host "`nThank you for using AD Management Tool v3.0!" -ForegroundColor Green
+    Write-Host "`nThank you for using AD Toolkit v3.0!" -ForegroundColor Green
 }

@@ -1,4 +1,5 @@
-# check_user.ps1
+# Get-UserLastLogon.ps1
+# Find a user by part of their name or username and show when they last signed in.
 # Check if Active Directory module is available
 if (!(Get-Module -ListAvailable -Name ActiveDirectory)) {
     Write-Host "ERROR: Active Directory module not found. Please install RSAT tools." -ForegroundColor Red
@@ -8,7 +9,7 @@ if (!(Get-Module -ListAvailable -Name ActiveDirectory)) {
 Import-Module ActiveDirectory
 
 try {
-    $nameSearch = Read-Host "Enter part of a name or username (e.g. 'mxi', 'Michael', or 'Vickers')"
+    $nameSearch = Read-Host "Enter part of a name or username (e.g. 'jdoe', 'Jane', or 'Doe')"
     
     # Validate input
     if ([string]::IsNullOrWhiteSpace($nameSearch)) {
